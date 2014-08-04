@@ -66,7 +66,7 @@ namespace LocalRunner
             await attendee2.CheckIn(location1);
 
             var whereAreYou = await attendee1.GetCurrentLocation();
-            Log.InfoFormat("I'm in '{0}'", await whereAreYou.Name);
+            Log.InfoFormat("I'm in session '{0}'", await whereAreYou.Name);
 
             //var sw = new Stopwatch();
             //sw.Start();
