@@ -16,7 +16,7 @@ namespace Grains
             {
                 var attendee = AttendeeFactory.GetGrain(badge.BadgeID);
                 var currentLocation = await attendee.GetCurrentLocation();
-                if (currentLocation.GetPrimaryKeyLong() != sensorId)
+                if (currentLocation == null || currentLocation.GetPrimaryKeyLong() != sensorId)
                 {
                     var location = LocationFactory.GetGrain(sensorId);
 
