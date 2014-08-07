@@ -64,7 +64,7 @@
     <Compile Include="ProximitySensor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Workspaces\ThatConference\ThatConferenceEventHub\EventTypes\EventTypes.csproj">
+    <ProjectReference Include="..\..\ThatConference\ThatConferenceEventHub\EventTypes\EventTypes.csproj">
       <Project>{54f47d93-e402-41fb-ae5a-6b469d0c669b}</Project>
       <Name>EventTypes</Name>
     </ProjectReference>
