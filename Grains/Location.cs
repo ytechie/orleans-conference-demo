@@ -4,14 +4,29 @@ using Orleans;
 
 namespace Grains
 {
-    public class Location : GrainBase, ILocation
+    [StorageProvider(ProviderName = "AzureStorage")]
+    public class Location : GrainBase<ILocationState>, ILocation
     {
-        public Task<string> Name { get; private set; }
-
         public Task SetName(string name)
         {
-            Name = Task.FromResult(name);
+            State.Name = name;
             return TaskDone.Done;
+        }
+
+        public Task<string> GetName()
+        {
+            return Task.FromResult(State.Name);
+        }
+
+        public override async Task ActivateAsync()
+        {
+            await base.ActivateAsync();
+
+            //Give the grain a default name for display purposes
+            if (string.IsNullOrEmpty(State.Name))
+            {
+                State.Name = this.GetPrimaryKeyLong().ToString();
+            }
         }
     }
 }

@@ -3,6 +3,9 @@
   <Globals>
     <StorageProviders>
       <Provider Type="Orleans.Storage.MemoryStorage" Name="MemoryStore" />
+
+      <Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStorage" DataConnectionString="DefaultEndpointsProtocol=https;AccountName=orleanstest01;AccountKey=z/FLnDB/+1OfGxhRjn2sxeX0bI6dGQTfqlGorvQl3fXHiFzn06IM0FBD+lhCKw9gg5red3QgcI8Mc8UrPmtzFA==" />
+      
       <!-- To use Azure storage, uncomment one of the following lines: -->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="UseDevelopmentStorage=true" />-->
       <!--<Provider Type="Orleans.Storage.AzureTableStorage" Name="AzureStore" DataConnectionString="DefaultEndpointsProtocol=https;AccountName=MYACCOUNTNAME;AccountKey=MYACCOUNTKEY" />-->

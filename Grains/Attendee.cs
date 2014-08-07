@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,39 +8,44 @@ using Orleans;
 
 namespace Grains
 {
-    public class Attendee : GrainBase, IAttendee
+    [StorageProvider(ProviderName = "AzureStorage")]
+    public class Attendee : GrainBase<IAttendeeState>, IAttendee
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private string _name;
-        private Dictionary<DateTime, ILocation> _locations;
-
-        public Task<string> Name
-        {
-            get
-            {
-                return Task.FromResult(_name);
-            }
-        }
-        //public List<ILocation> LocationHistory { get; private set; }
-
         public Task SetName(string name)
         {
-            _name = name;
+            State.Name = name;
             return TaskDone.Done;
+        }
+
+        public Task<string> GetName()
+        {
+            return Task.FromResult(State.Name);
         }
 
         public async Task CheckIn(ILocation location)
         {
-            _locations.Add(DateTime.UtcNow, location);
-            var locName = await location.Name;
+            
 
-            Log.DebugFormat("{0}, welcome to the session '{1}'", _name, locName);
+            if (State.Locations.Count > 50)
+            {
+                var oldestCheckin = State.Locations.OrderBy(l => l.Key).Take(1).Single().Key;
+                State.Locations.Remove(oldestCheckin);
+            }
+
+            State.Locations.Add(DateTime.UtcNow, location);
+            var locName = await location.GetName();
+
+            Log.DebugFormat("{0}, welcome to the session '{1}'", State.Name, locName);
+
+            //Persist state
+            await State.WriteStateAsync();
         }
 
         public async Task<ILocation> GetCurrentLocation()
         {
-            var checkIn = _locations.OrderByDescending(x => x.Key).FirstOrDefault();
+            var checkIn = State.Locations.OrderByDescending(x => x.Key).FirstOrDefault();
 
             if (checkIn.Value == null)
                 return null;
@@ -49,11 +53,15 @@ namespace Grains
             return checkIn.Value;
         }
 
-        public override Task ActivateAsync()
+        public override async Task ActivateAsync()
         {
-            _locations = new Dictionary<DateTime, ILocation>();
-            //LocationHistory = new List<ILocation>();
-            return base.ActivateAsync();
+            await base.ActivateAsync();
+
+            //Give the grain a default name for display purposes
+            if (string.IsNullOrEmpty(State.Name))
+            {
+                State.Name = this.GetPrimaryKeyLong().ToString();
+            }
         }
     }
 }

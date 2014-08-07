@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using GrainInterfaces;
@@ -46,17 +47,29 @@ namespace LocalRunner
 
             var setup = new List<Task>();
 
-            var attendee1 = AttendeeFactory.GetGrain(1);
-            setup.Add(attendee1.SetName("Jason Young"));
-
-            var attendee2 = AttendeeFactory.GetGrain(2);
-            setup.Add(attendee2.SetName("Tony Guidici"));
-
             var location1 = LocationFactory.GetGrain(1);
             setup.Add(location1.SetName("Big Data"));
 
             var location2 = LocationFactory.GetGrain(2);
             setup.Add(location2.SetName("Orleans"));
+
+
+            var attendee1 = AttendeeFactory.GetGrain(1);
+
+            var name = await attendee1.GetName();
+            var location = await attendee1.GetCurrentLocation();
+            await attendee1.CheckIn(location1);
+            await attendee1.CheckIn(location2);
+            
+            location = await attendee1.GetCurrentLocation();
+            var eq = location == location2;
+
+            setup.Add(attendee1.SetName("Jason Young"));
+
+            var attendee2 = AttendeeFactory.GetGrain(2);
+            setup.Add(attendee2.SetName("Tony Guidici"));
+
+            
 
 
             Task.WaitAll(setup.ToArray());
@@ -66,7 +79,7 @@ namespace LocalRunner
             await attendee2.CheckIn(location1);
 
             var whereAreYou = await attendee1.GetCurrentLocation();
-            Log.InfoFormat("I'm in session '{0}'", await whereAreYou.Name);
+            Log.InfoFormat("I'm in session '{0}'", await whereAreYou.GetName());
 
             //var sw = new Stopwatch();
             //sw.Start();
@@ -88,6 +101,7 @@ namespace LocalRunner
         static void InitSilo(string[] args)
         {
             Log4stuff.Appender.Log4stuffAppender.AutoConfigureLogging("jy-orleans-silo");
+            Process.Start("http://log4stuff.com/app/jy-orleans-silo");
 
             hostWrapper = new OrleansHostWrapper(args);
 

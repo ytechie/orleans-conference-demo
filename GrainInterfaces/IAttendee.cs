@@ -6,9 +6,10 @@ namespace GrainInterfaces
 {
     public interface IAttendee : IGrain
     {
-        Task<string> Name { get; }
         //List<ILocation> LocationHistory { get; }
         Task SetName(string name);
+
+        Task<string> GetName();
 
         Task CheckIn(ILocation location);
 

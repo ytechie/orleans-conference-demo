@@ -47,8 +47,15 @@
     <Compile Include="IAttendee.cs" />
     <Compile Include="IGrain1.cs" />
     <Compile Include="ILocation.cs" />
+    <Compile Include="IProximitySensor.cs" />
     <Compile Include="Properties\orleans.codegen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Workspaces\ThatConference\ThatConferenceEventHub\EventTypes\EventTypes.csproj">
+      <Project>{54f47d93-e402-41fb-ae5a-6b469d0c669b}</Project>
+      <Name>EventTypes</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
