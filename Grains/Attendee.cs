@@ -8,6 +8,8 @@ using Orleans;
 
 namespace Grains
 {
+    //We're speicifying a storage provider from our config
+    //You can build your own storage provider if you like
     [StorageProvider(ProviderName = "AzureStorage")]
     public class Attendee : GrainBase<IAttendeeState>, IAttendee
     {
@@ -16,6 +18,8 @@ namespace Grains
         public Task SetName(string name)
         {
             State.Name = name;
+
+            //There is a helper for methods that would normally return void
             return TaskDone.Done;
         }
 
@@ -26,8 +30,6 @@ namespace Grains
 
         public async Task CheckIn(ILocation location)
         {
-            
-
             if (State.Locations.Count > 50)
             {
                 var oldestCheckin = State.Locations.OrderBy(l => l.Key).Take(1).Single().Key;
