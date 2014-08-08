@@ -15,7 +15,7 @@ namespace LocalRunner
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Task.Run(() => Run()).Wait();
 
@@ -25,7 +25,7 @@ namespace LocalRunner
             //hostDomain.DoCallBack(ShutdownSilo);
         }
 
-        static async void Run()
+        private static async void Run()
         {
             // The Orleans silo environment is initialized in its own app domain in order to more
             // closely emulate the distributed situation, when the client and the server cannot
@@ -39,12 +39,22 @@ namespace LocalRunner
             Log4stuff.Appender.Log4stuffAppender.AutoConfigureLogging("jy-orleans");
 
             Orleans.OrleansClient.Initialize("DevTestClientConfiguration.xml");
-
             Log.Info("Orleans Silo is running.");
 
-            //var grain = Grain1Factory.GetGrain(5);
-            //var msg = grain.SayHello();
+            await IntroducingAGrain();
 
+            await CheckInDemo();
+        }
+
+        private async static Task IntroducingAGrain()
+        {
+            //Easy to work with grains!
+            var g1 = Grain1Factory.GetGrain(1);
+            var reply = await g1.SayHello();
+        }
+
+        private async static Task CheckInDemo()
+        {
             var setup = new List<Task>();
 
             var location1 = LocationFactory.GetGrain(1);
@@ -60,7 +70,7 @@ namespace LocalRunner
             var location = await attendee1.GetCurrentLocation();
             await attendee1.CheckIn(location1);
             await attendee1.CheckIn(location2);
-            
+
             location = await attendee1.GetCurrentLocation();
             var eq = location == location2;
 
@@ -69,33 +79,13 @@ namespace LocalRunner
             var attendee2 = AttendeeFactory.GetGrain(2);
             setup.Add(attendee2.SetName("Tony Guidici"));
 
-            
-
-
             Task.WaitAll(setup.ToArray());
-
 
             await attendee1.CheckIn(location2);
             await attendee2.CheckIn(location1);
 
             var whereAreYou = await attendee1.GetCurrentLocation();
             Log.InfoFormat("I'm in session '{0}'", await whereAreYou.GetName());
-
-            //var sw = new Stopwatch();
-            //sw.Start();
-            //string name = "";
-            //for(var i = 0; i < 100000; i++)
-            //{
-            //    var ga = AttendeeFactory.GetGrain(1);
-            //    name = ga.Name.Result;
-            //}
-            //sw.Stop();
-            //Console.WriteLine("Name: {0} (retrieved in {1}ms)", name, sw.ElapsedMilliseconds/1000.0);
-
-
-            //Console.WriteLine("Got message: {0}", msg.Result);
-
-
         }
 
         static void InitSilo(string[] args)
