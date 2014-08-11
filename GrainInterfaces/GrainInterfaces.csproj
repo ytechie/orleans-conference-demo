@@ -48,6 +48,7 @@
     <Compile Include="IGrain1.cs" />
     <Compile Include="ILocation.cs" />
     <Compile Include="IProximitySensor.cs" />
+    <Compile Include="ITweet.cs" />
     <Compile Include="Properties\orleans.codegen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

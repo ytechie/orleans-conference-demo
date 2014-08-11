@@ -46,6 +46,9 @@ namespace Ingestor
                     {
                         TweetEvent tweet = JsonConvert.DeserializeObject<TweetEvent>(Encoding.Unicode.GetString(eventData.GetBytes()));
 
+                        var tweetGrain = TweetFactory.GetGrain(tweet.GetHashCode());
+                        tweetGrain.SetTweetInfo(tweet.Text);
+
                         //Console.WriteLine(string.Format("Message received.  **Tweet**, Created By: '{1}': '{2}'",
                         //    this.partitionContext.Lease.PartitionId, tweet.Author, tweet.Text));
 
